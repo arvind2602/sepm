@@ -18,6 +18,10 @@ llm = Anthropic(model="claude-3-opus-20240229")
 async def complete_message_async(message):
     return await asyncio.to_thread(llm.complete, message)
 
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
 @app.post("/complete")
 async def complete_message(request: Request):
     data = await request.json()
