@@ -34,12 +34,13 @@ async def read_root():
 async def complete_message(request: Request):
     data = await request.json()
     message = data.get('message', '')
+    final=os.getenv("MESSAGE")+message
     
     if not message:
         return {"error": "Please provide a message to complete."}
 
     try:
-        completion = await complete_message_async(message)
+        completion = await complete_message_async(final)
         return {"result": completion}
     except Exception as e:
         return {"error": f"Error completing message: {str(e)}"}
