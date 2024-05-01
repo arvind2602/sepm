@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from llama_index.llms.anthropic import Anthropic
 from dotenv import load_dotenv
 import os
-import uvicorn
 import asyncio
 
 load_dotenv()
@@ -15,6 +14,7 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 llm = Anthropic(api_key=ANTHROPIC_API_KEY, model="claude-3-opus-20240229")
 
 # Configure CORS to allow requests from localhost
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -44,6 +44,20 @@ async def complete_message(request: Request):
         return {"result": completion}
     except Exception as e:
         return {"error": f"Error completing message: {str(e)}"}
+    
+@app.post("/consell")
+async def complete_message(request: Request):
+    data = await request.json()
+    message = data.get('message', '')
+    final=os.getenv("MESSAGE_CONSELL")+message
+    
+    if not message:
+        return {"error": "Please provide a message to complete."}
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    try:
+        completion = await complete_message_async(final)
+        return {"result": completion}
+    except Exception as e:
+        return {"error": f"Error completing message: {str(e)}"}
+    
+
